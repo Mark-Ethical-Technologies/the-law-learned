@@ -50,6 +50,62 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://fairworkhelp.app/#website",
+      "url": "https://fairworkhelp.app",
+      "name": "Fair Work Help",
+      "description": "AI-powered legal education for Australian workers. Know your rights under the Fair Work Act 2009.",
+      "publisher": { "@id": "https://fairworkhelp.app/#organization" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": { "@type": "EntryPoint", "urlTemplate": "https://fairworkhelp.app/?q={search_term_string}" },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://fairworkhelp.app/#organization",
+      "name": "Fair Work Help",
+      "alternateName": "Ethical Technologies Pty Ltd",
+      "url": "https://fairworkhelp.app",
+      "description": "Legal education platform for Australian workers. Not the Fair Work Ombudsman.",
+      "areaServed": "AU",
+      "knowsAbout": ["Fair Work Act 2009", "Modern Awards", "Australian employment law", "wage theft", "underpayment recovery"],
+      "serviceType": "Legal Education",
+      "slogan": "Know the law. Change everything."
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Am I being paid the correct award rate?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Upload your payslip and our AI will compare your pay against your award classification. Most workers are on the wrong level. Check for free at fairworkhelp.app." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the security guard pay rate in Australia 2025?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Under the Security Services Industry Award MA000016, rates range from $25.27/hr (Level 1) to $27.74/hr (Level 5) plus penalty rates for nights, weekends and public holidays. Most guards are misclassified." }
+        },
+        {
+          "@type": "Question",
+          "name": "How far back can I claim unpaid wages in Australia?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Under the Fair Work Act 2009, you can generally claim up to 6 years of unpaid wages. For many workers, this represents tens of thousands of dollars." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Fair Work Help the same as the Fair Work Ombudsman?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Fair Work Help is a legal education platform by Ethical Technologies Pty Ltd. The Fair Work Ombudsman (fairwork.gov.au) is the official government regulator. We help you understand and prepare — they investigate and enforce." }
+        }
+      ]
+    }
+  ]
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -69,6 +125,10 @@ export default function RootLayout({
         <link rel="alternate" hrefLang="x-default" href="https://fairworkhelp.app" />
         <meta name="geo.region" content="AU" />
         <meta name="geo.placename" content="Australia" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body>{children}</body>
     </html>

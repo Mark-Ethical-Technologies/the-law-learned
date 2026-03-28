@@ -17,25 +17,43 @@ const SECTORS = [
 ];
 
 const LANGUAGES = [
-  { code: "bn", name: "বাংলা", english: "Bengali", searchTerm: "ন্যায্য কাজের সাহায্য" },
-  { code: "ne", name: "नेपाली", english: "Nepali", searchTerm: "उचित काम सहायता" },
-  { code: "hi", name: "हिन्दी", english: "Hindi", searchTerm: "उचित काम सहायता" },
-  { code: "pa", name: "ਪੰਜਾਬੀ", english: "Punjabi", searchTerm: "ਨਿਆਂਪੂਰਨ ਕੰਮ ਮਦਦ" },
-  { code: "ur", name: "اردو", english: "Urdu", searchTerm: "منصفانہ کام کی مدد" },
-  { code: "ta", name: "தமிழ்", english: "Tamil", searchTerm: "நியாயமான வேலை உதவி" },
-  { code: "si", name: "සිංහල", english: "Sinhala", searchTerm: "සාධාරණ කාර්ය සහාය" },
-  { code: "my", name: "မြန်မာ", english: "Burmese", searchTerm: "မျှတသောအလုပ်အကူအညီ" },
-  { code: "tl", name: "Filipino", english: "Tagalog", searchTerm: "Tulong sa Makatarungang Trabaho" },
-  { code: "th", name: "ภาษาไทย", english: "Thai", searchTerm: "ความช่วยเหลือด้านงานที่เป็นธรรม" },
-  { code: "id", name: "Indonesia", english: "Indonesian", searchTerm: "Bantuan kerja yang adil" },
-  { code: "vi", name: "Tiếng Việt", english: "Vietnamese", searchTerm: "Hỗ trợ công việc công bằng" },
-  { code: "zh", name: "普通话", english: "Mandarin", searchTerm: "公平工作帮助" },
-  { code: "yue", name: "廣東話", english: "Cantonese", searchTerm: "公平工作幫助" },
-  { code: "ko", name: "한국어", english: "Korean", searchTerm: "공정한 업무 지원" },
-  { code: "ja", name: "日本語", english: "Japanese", searchTerm: "公正な労働支援" },
-  { code: "es", name: "Español", english: "Spanish", searchTerm: "Ayuda laboral justa" },
-  { code: "ar", name: "العربية", english: "Arabic", searchTerm: "مساعدة عادلة في العمل" },
-  { code: "other", name: "Other →", english: "All languages", searchTerm: "" },
+  { code: "bn", name: "বাংলা", english: "Bengali", searchTerm: "ন্যায্য কাজের সাহায্য",
+    headline: "আপনার প্রাপ্য মজুরি পাচ্ছেন তো?", cta: "আমার পে স্লিপ চেক করুন — বিনামূল্যে" },
+  { code: "ne", name: "नेपाली", english: "Nepali", searchTerm: "उचित काम सहायता",
+    headline: "के तपाईंलाई प्राप्य पारिश्रमिक मिलेको छ?", cta: "मेरो पे स्लिप जाँच गर्नुहोस् — निःशुल्क" },
+  { code: "hi", name: "हिन्दी", english: "Hindi", searchTerm: "उचित काम सहायता",
+    headline: "क्या आपको वह मजदूरी मिल रही है जिसके आप हकदार हैं?", cta: "मेरी पे स्लिप जाँचें — मुफ़्त में" },
+  { code: "pa", name: "ਪੰਜਾਬੀ", english: "Punjabi", searchTerm: "ਨਿਆਂਪੂਰਨ ਕੰਮ ਮਦਦ",
+    headline: "ਕੀ ਤੁਹਾਨੂੰ ਉਹ ਭੁਗਤਾਨ ਮਿਲ ਰਿਹਾ ਹੈ ਜਿਸਦੇ ਤੁਸੀਂ ਹੱਕਦਾਰ ਹੋ?", cta: "ਮੇਰੀ ਪੇ ਸਲਿੱਪ ਜਾਂਚੋ — ਮੁਫ਼ਤ" },
+  { code: "ur", name: "اردو", english: "Urdu", searchTerm: "منصفانہ کام کی مدد",
+    headline: "کیا آپ کو وہ تنخواہ مل رہی ہے جس کے آپ مستحق ہیں؟", cta: "میری پے سلپ چیک کریں — مفت" },
+  { code: "ta", name: "தமிழ்", english: "Tamil", searchTerm: "நியாயமான வேலை உதவி",
+    headline: "உங்களுக்கு உரிய ஊதியம் கிடைக்கிறதா?", cta: "என் சம்பள சீட்டை சரிபார்க்கவும் — இலவசம்" },
+  { code: "si", name: "සිංහල", english: "Sinhala", searchTerm: "සාධාරණ කාර්ය සහාය",
+    headline: "ඔබට ලැබිය යුතු වේතනය ලැබෙනවාද?", cta: "මගේ Pay Slip පරීක්ෂා කරන්න — නොමිලේ" },
+  { code: "my", name: "မြန်မာ", english: "Burmese", searchTerm: "မျှတသောအလုပ်အကူအညီ",
+    headline: "သင်ထိုက်တန်သော လုပ်ခ ရနေလား?", cta: "ကျွန်ုပ်၏ pay slip စစ်ဆေးပါ — အခမဲ့" },
+  { code: "tl", name: "Filipino", english: "Tagalog", searchTerm: "Tulong sa Makatarungang Trabaho",
+    headline: "Natatanggap mo ba ang tamang bayad?", cta: "Suriin ang aking payslip — libre" },
+  { code: "th", name: "ภาษาไทย", english: "Thai", searchTerm: "ความช่วยเหลือด้านงานที่เป็นธรรม",
+    headline: "คุณได้รับค่าจ้างที่สมควรได้รับหรือไม่?", cta: "ตรวจสอบสลิปเงินเดือนของฉัน — ฟรี" },
+  { code: "id", name: "Indonesia", english: "Indonesian", searchTerm: "Bantuan kerja yang adil",
+    headline: "Apakah Anda dibayar sesuai yang Anda dapatkan?", cta: "Periksa slip gaji saya — gratis" },
+  { code: "vi", name: "Tiếng Việt", english: "Vietnamese", searchTerm: "Hỗ trợ công việc công bằng",
+    headline: "Bạn có được trả lương đúng với những gì bạn xứng đáng không?", cta: "Kiểm tra phiếu lương của tôi — miễn phí" },
+  { code: "zh", name: "普通话", english: "Mandarin", searchTerm: "公平工作帮助",
+    headline: "你得到了应得的报酬吗？", cta: "检查我的工资单 — 免费" },
+  { code: "yue", name: "廣東話", english: "Cantonese", searchTerm: "公平工作幫助",
+    headline: "你有冇攞到你應得嘅薪酬？", cta: "查看我嘅薪金單 — 免費" },
+  { code: "ko", name: "한국어", english: "Korean", searchTerm: "공정한 업무 지원",
+    headline: "당신은 마땅히 받아야 할 급여를 받고 있나요?", cta: "내 급여명세서 확인하기 — 무료" },
+  { code: "ja", name: "日本語", english: "Japanese", searchTerm: "公正な労働支援",
+    headline: "あなたは本当に受け取るべき賃金を受け取っていますか？", cta: "給与明細を確認する — 無料" },
+  { code: "es", name: "Español", english: "Spanish", searchTerm: "Ayuda laboral justa",
+    headline: "¿Te están pagando lo que realmente mereces?", cta: "Verificar mi recibo de sueldo — gratis" },
+  { code: "ar", name: "العربية", english: "Arabic", searchTerm: "مساعدة عادلة في العمل",
+    headline: "هل تتلقى الأجر الذي تستحقه فعلاً؟", cta: "تحقق من كشف راتبي — مجاناً" },
+  { code: "other", name: "Other →", english: "All languages", searchTerm: "", headline: "", cta: "" },
 ];
 
 const STATS = [
@@ -84,6 +102,7 @@ export default function Home() {
   const [sector, setSector] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [activeLang, setActiveLang] = useState<typeof LANGUAGES[0] | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,8 +137,9 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <a href="/security-industry-award" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors">Award Guides</a>
             <a href="#how-it-works" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors">How it works</a>
-            <a href="#early-access" className="bg-[#C9A84C] hover:bg-[#b8963e] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-              Check my pay
+            <a href="/auth/login" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors">Sign in</a>
+            <a href="/auth/login" className="bg-[#C9A84C] hover:bg-[#b8963e] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+              Get started free
             </a>
           </div>
         </div>
@@ -333,14 +353,59 @@ export default function Home() {
                   <div className="text-[#C9A84C]/60 text-xs group-hover:text-[#C9A84C]/80">{lang.english}</div>
                 </a>
               ) : (
-                <div key={lang.code} className="bg-white/5 border border-white/10 hover:border-[#C9A84C]/50 hover:bg-white/10 rounded-xl p-3 transition-all cursor-pointer group">
-                  <div className="text-white font-bold text-sm">{lang.name}</div>
-                  <div className="text-white/40 text-xs group-hover:text-white/60">{lang.english}</div>
+                <button
+                  key={lang.code}
+                  onClick={() => setActiveLang(activeLang?.code === lang.code ? null : lang)}
+                  className={`rounded-xl p-3 transition-all cursor-pointer group text-left w-full ${
+                    activeLang?.code === lang.code
+                      ? "bg-[#C9A84C] border border-[#C9A84C]"
+                      : "bg-white/5 border border-white/10 hover:border-[#C9A84C]/50 hover:bg-white/10"
+                  }`}
+                >
+                  <div className={`font-bold text-sm ${activeLang?.code === lang.code ? "text-white" : "text-white"}`}>{lang.name}</div>
+                  <div className={`text-xs ${activeLang?.code === lang.code ? "text-white/80" : "text-white/40 group-hover:text-white/60"}`}>{lang.english}</div>
                   <span className="sr-only">{lang.searchTerm}</span>
-                </div>
+                </button>
               )
             ))}
           </div>
+
+          {/* Bilingual content panel — shows when a language is selected */}
+          {activeLang && (
+            <div className="bg-white/5 border border-[#C9A84C]/30 rounded-2xl p-6 mb-6 animate-pulse-once">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  {/* Bilingual headline — mother tongue first, English scaffolded below */}
+                  <div className="mb-4">
+                    <p className="text-white font-bold text-xl leading-snug mb-1">{activeLang.headline}</p>
+                    <p className="text-white/40 text-sm italic">Are you being paid what you&apos;re actually owed?</p>
+                  </div>
+                  <div className="mb-4">
+                    <a
+                      href="/auth/login"
+                      className="inline-block bg-[#C9A84C] hover:bg-[#b8963e] text-white font-bold px-6 py-3 rounded-xl transition-all mb-1"
+                    >
+                      {activeLang.cta}
+                    </a>
+                    <p className="text-white/30 text-xs mt-1 italic">Check my payslip — it&apos;s free</p>
+                  </div>
+                  <p className="text-white/40 text-sm">
+                    {activeLang.english === "Arabic" || activeLang.english === "Urdu"
+                      ? "Chat with us in your language below ↓"
+                      : `Chat with us in ${activeLang.english} in the chat below ↓`}
+                    <span className="text-white/20 ml-2 italic">Chat with us in your language below ↓</span>
+                  </p>
+                </div>
+                <button
+                  onClick={() => setActiveLang(null)}
+                  className="text-white/30 hover:text-white/70 text-2xl transition-colors shrink-0"
+                  aria-label="Back to English"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          )}
           {/* Hidden SEO text for multilingual search */}
           <div className="sr-only">
             <p>Fair Work Help — ন্যায্য কাজের সাহায্য — বাংলাদেশি কর্মীদের জন্য মজুরি সহায়তা অস্ট্রেলিয়া</p>

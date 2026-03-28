@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { anthropic, MODELS } from "@/lib/anthropic/client";
+import { anthropic, MODELS } from "../../../lib/anthropic/client";
 
 export async function POST(req: NextRequest) {
   try {

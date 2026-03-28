@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+function getAnthropicClient() {
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+}
 
 const SYSTEM_PROMPT = `You are the Fair Work Help assistant. You help Australian workers understand if they are being paid correctly under the Fair Work Act 2009 and relevant modern awards.
 
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No messages" }, { status: 400 });
     }
 
-    const response = await client.messages.create({
+    const response = await getAnthropicClient().messages.create({
       model: "claude-opus-4-6",
       max_tokens: 600, // Hard cap — enforces brevity
       system: SYSTEM_PROMPT,

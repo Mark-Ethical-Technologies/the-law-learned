@@ -2,11 +2,9 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createServiceClient } from "@/lib/supabase/service";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-
-const PRICE_PLUS_WEEKLY = process.env.NEXT_PUBLIC_STRIPE_PRICE_PLUS_WEEKLY;
-const PRICE_MATTER_PACK = process.env.NEXT_PUBLIC_STRIPE_PRICE_MATTER_PACK;
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!);
+}
 
 async function resolveUserId(supabase: ReturnType<typeof createServiceClient>, email: string): Promise<string | null> {
   // Try profiles table first (email synced from auth.users)
@@ -25,6 +23,11 @@ async function resolveUserId(supabase: ReturnType<typeof createServiceClient>, e
 }
 
 export async function POST(request: Request) {
+  const stripe = getStripe();
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+  const PRICE_PLUS_WEEKLY = process.env.NEXT_PUBLIC_STRIPE_PRICE_PLUS_WEEKLY;
+  const PRICE_MATTER_PACK = process.env.NEXT_PUBLIC_STRIPE_PRICE_MATTER_PACK;
+
   const body = await request.text();
   const signature = request.headers.get("stripe-signature");
 

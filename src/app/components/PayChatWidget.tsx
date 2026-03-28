@@ -23,11 +23,9 @@ interface MatterPackForm {
   employer: string;
 }
 
-const WELCOME_MESSAGE = `G'day — I'm your Fair Work pay calculator. No forms, no jargon, just answers.
+const WELCOME_MESSAGE = `G'day — I'm the Fair Work Help assistant.
 
-I can help workers in any industry understand what they should be paid, spot if something's wrong, and see the tricks some employers use to avoid paying what the law requires.
-
-Tell me what you do and I'll get started. You can also upload a payslip, roster or timesheet and I'll analyse it directly.
+Tell me what you do and roughly what you're being paid. I'll let you know whether it looks right, and what's worth looking into further.
 
 What's your situation?`;
 
@@ -230,7 +228,7 @@ export default function PayChatWidget() {
           className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#C9A84C] text-[#1B3A5C] px-5 py-3 rounded-full shadow-2xl hover:bg-[#d4b860] transition-all duration-200 font-semibold text-sm"
         >
           <span className="text-lg">💬</span>
-          <span>Check my pay — free</span>
+          <span>Check my pay</span>
         </button>
       )}
 
@@ -248,7 +246,7 @@ export default function PayChatWidget() {
               </div>
               <div>
                 <p className="text-white font-semibold text-sm leading-tight">Fair Work Pay Check</p>
-                <p className="text-[#C9A84C] text-xs">Free · Any industry · Upload payslips</p>
+                <p className="text-[#C9A84C] text-xs">Free check · All industries · No account needed</p>
               </div>
             </div>
             <button onClick={() => setIsOpen(false)} className="text-white/60 hover:text-white p-1">

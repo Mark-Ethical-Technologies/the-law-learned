@@ -62,7 +62,7 @@ export default async function Dashboard() {
         <div className="grid md:grid-cols-3 gap-5 mb-8">
           {[
             { icon: "💬", title: "Chat with the AI", desc: "Ask about your award, upload your payslip, or tell your story.", href: "/", cta: "Start chatting" },
-            { icon: "🎙️", title: "Start a Matter Interview", desc: "PEACE cognitive interview — document your situation for potential legal proceedings.", href: "/dashboard/matter/new", cta: "Begin interview" },
+            { icon: "🎙️", title: "Matter Interviews", desc: "PEACE cognitive interview — document your situation for potential legal proceedings.", href: "/dashboard/matter", cta: "View interviews" },
             { icon: "📋", title: "Browse Award Guides", desc: "Read your Modern Award in plain English. Over 120 awards covered.", href: "/awards", cta: "Browse awards" },
           ].map((card) => (
             <div key={card.title} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">

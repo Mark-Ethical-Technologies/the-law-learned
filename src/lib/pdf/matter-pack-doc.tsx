@@ -325,6 +325,108 @@ export function MatterPackDocument({ data }: { data: MatterPackData }) {
           />
         </View>
       </Page>
+
+      {/* Demand letter page */}
+      <Page size="A4" style={styles.page}>
+        {/* Sender details */}
+        <View style={{ marginBottom: 20 }}>
+          <Text style={[styles.bodyText, { fontWeight: "bold", marginBottom: 2 }]}>
+            {data.workerName}
+          </Text>
+          <Text style={styles.bodyText}>{dateStr}</Text>
+          <Text style={{ fontSize: 10, color: "#1a1a1a", marginTop: 8, marginBottom: 0 }}> </Text>
+          <Text style={[styles.bodyText, { fontWeight: "bold", letterSpacing: 1 }]}>
+            WITHOUT PREJUDICE
+          </Text>
+        </View>
+
+        {/* Addressee */}
+        <View style={{ marginBottom: 20 }}>
+          <Text style={[styles.bodyText, { fontWeight: "bold", marginBottom: 2 }]}>To:</Text>
+          <Text style={styles.bodyText}>{data.employer}</Text>
+          <Text style={[styles.bodyText, { color: "#9ca3af" }]}>
+            [Employer address — insert before sending]
+          </Text>
+        </View>
+
+        {/* Subject line */}
+        <View style={{ borderBottom: "2px solid #1B3A5C", paddingBottom: 10, marginBottom: 16 }}>
+          <Text style={{ fontSize: 11, fontWeight: "bold", color: "#1B3A5C" }}>
+            SUBJECT: DEMAND FOR PAYMENT OF UNDERPAID WAGES AND ENTITLEMENTS
+          </Text>
+        </View>
+
+        {/* Salutation */}
+        <Text style={styles.bodyText}>
+          Dear {data.employer !== "Employer not specified" ? data.employer : "Sir or Madam"},
+        </Text>
+
+        {/* Opening paragraph */}
+        <Text style={styles.bodyText}>
+          I write to formally demand payment of wages and entitlements I believe are owed to me
+          under the {data.awardName && data.awardName !== "To be confirmed" ? data.awardName : "relevant Modern Award"} or the National Employment Standards, as documented in the
+          attached privileged preparation file.
+        </Text>
+
+        {/* Summary of claim */}
+        <View style={[styles.sectionTitle, { marginTop: 14 }]}>
+          <Text>SUMMARY OF CLAIM</Text>
+        </View>
+        <Text style={[styles.bodyText, { marginBottom: 6 }]}>
+          {data.issuesSummary && data.issuesSummary !== "Issues to be identified through interview process."
+            ? data.issuesSummary
+            : "See attached account for full details of the matters in dispute."}
+        </Text>
+
+        {/* Payment demand */}
+        <View style={[styles.sectionTitle, { marginTop: 14 }]}>
+          <Text>PAYMENT DEMAND</Text>
+        </View>
+        <Text style={styles.bodyText}>
+          I request that you review this matter and contact me within 14 days to resolve this
+          dispute. If this matter is not resolved, I intend to lodge a complaint with the Fair Work
+          Commission.
+        </Text>
+
+        {/* Important dates */}
+        <View style={[styles.sectionTitle, { marginTop: 14 }]}>
+          <Text>IMPORTANT DATES</Text>
+        </View>
+        <View style={{ marginBottom: 4 }}>
+          <Text style={styles.bodyText}>
+            Time limit: Underpayment claims must be lodged within 6 years of the underpayment
+            occurring.
+          </Text>
+        </View>
+        <View style={styles.infoBox}>
+          <Text style={styles.infoBoxText}>
+            Fair Work Commission: 1300 799 675 | www.fwc.gov.au{"\n"}
+            Fair Work Ombudsman: 13 13 94 | www.fairwork.gov.au
+          </Text>
+        </View>
+
+        {/* Closing */}
+        <View style={{ marginTop: 20 }}>
+          <Text style={styles.bodyText}>Yours sincerely,</Text>
+          <Text style={{ fontSize: 10, color: "#1a1a1a", marginTop: 32, marginBottom: 0 }}>
+            {data.workerName}
+          </Text>
+          <Text style={[styles.bodyText, { color: "#9ca3af" }]}>
+            [Sign above before sending]
+          </Text>
+        </View>
+
+        {/* Page footer with privilege notice */}
+        <View style={styles.footer} fixed>
+          <Text style={[styles.footerText, { flex: 1 }]}>
+            PRIVILEGED AND CONFIDENTIAL — DOMINANT PURPOSE: PREPARATION FOR LEGAL PROCEEDINGS / Esso Australia Resources Pty Ltd v Commissioner of Taxation (1999) 201 CLR 49
+          </Text>
+          <Text
+            style={[styles.pageNumber, { marginLeft: 8 }]}
+            render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`}
+          />
+        </View>
+      </Page>
     </Document>
   );
 }

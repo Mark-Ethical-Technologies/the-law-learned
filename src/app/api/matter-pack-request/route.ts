@@ -6,9 +6,12 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const MATTER_PACK_PAYMENT_LINK = "https://buy.stripe.com/test_eVq7sNb6ue4MeFndKRgjC00";
+const MATTER_PACK_PAYMENT_LINK = process.env.STRIPE_MATTER_PACK_PAYMENT_LINK || "";
 
 export async function POST(request: NextRequest) {
+  if (!MATTER_PACK_PAYMENT_LINK) {
+    return NextResponse.json({ error: "Payment not configured" }, { status: 503 });
+  }
   try {
     const { name, email, employer, summary } = await request.json();
 

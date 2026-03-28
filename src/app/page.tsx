@@ -126,10 +126,10 @@ export default function Home() {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert("Something went wrong starting checkout. Please try again.");
+        alert(data.error || "Something went wrong starting checkout. Please try again.");
       }
     } catch {
-      alert("Could not connect to checkout. Please try again.");
+      alert("Could not connect to checkout. Please check your connection and try again.");
     } finally {
       setCheckoutLoading(null);
     }
@@ -475,7 +475,7 @@ export default function Home() {
                 cta: "Get early access",
                 ctaHref: "",
                 ctaMode: "checkout" as const,
-                priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PLUS_WEEKLY || "price_1TFrhUQ1Be0MYtutV2W6anSj",
+                priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PLUS_WEEKLY || "",
                 checkoutMode: "subscription" as const,
               },
               {
@@ -487,7 +487,7 @@ export default function Home() {
                 cta: "Get the Matter Pack",
                 ctaHref: "",
                 ctaMode: "checkout" as const,
-                priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_MATTER_PACK || "price_1TFrhYQ1Be0MYtutYI2Nyzba",
+                priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_MATTER_PACK || "",
                 checkoutMode: "payment" as const,
               },
             ].map((plan) => (

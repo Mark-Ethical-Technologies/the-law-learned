@@ -15,7 +15,7 @@ const WELCOME_LANGUAGES = [
 
 function LoginForm() {
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/profile/setup";
+  const redirect = searchParams.get("redirect") || "/dashboard";
   const errorParam = searchParams.get("error");
 
   const [email, setEmail] = useState("");

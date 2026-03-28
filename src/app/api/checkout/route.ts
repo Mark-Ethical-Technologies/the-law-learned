@@ -8,6 +8,10 @@ function getStripe() {
 
 export async function POST(request: Request) {
   try {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error("STRIPE_SECRET_KEY is not set");
+      return NextResponse.json({ error: "Payment system not configured" }, { status: 503 });
+    }
     const stripe = getStripe();
     const { priceId, mode } = await request.json() as {
       priceId: string;

@@ -13,7 +13,18 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
   }
 
-  const supabase = getServiceClient();
+  // Initialise service client — wrapped so failures return JSON not HTML 500
+  let supabase;
+  try {
+    supabase = getServiceClient();
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return NextResponse.json(
+      { error: `Service client init failed: ${msg}` },
+      { status: 500 }
+    );
+  }
+
   let checked = 0;
   let changed = 0;
   let errors = 0;

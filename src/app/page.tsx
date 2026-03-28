@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import PayChatWidget from "./components/PayChatWidget";
 
 const SECTORS = [
   { name: "Security", icon: "🛡️", award: "Security Services Industry Award", hook: "Level misclassification costs guards $6,000–$48,000", color: "from-blue-900 to-blue-800" },
@@ -479,6 +480,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      <PayChatWidget />
     </div>
   );
 }

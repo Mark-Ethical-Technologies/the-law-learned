@@ -15,10 +15,8 @@ const LANGUAGE_NAMES: Record<string, string> = {
   pt: "Portuguese",
 };
 
-let _anthropic: Anthropic | null = null;
 function getAnthropicClient(): Anthropic {
-  if (!_anthropic) _anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  return _anthropic;
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 }
 
 export interface TranslateOptions {

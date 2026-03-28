@@ -103,6 +103,28 @@ export default function Home() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeLang, setActiveLang] = useState<typeof LANGUAGES[0] | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+
+  const handleCheckout = async (priceId: string, mode: "payment" | "subscription") => {
+    setCheckoutLoading(priceId);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ priceId, mode }),
+      });
+      const data = await res.json() as { url?: string; error?: string };
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Something went wrong starting checkout. Please try again.");
+      }
+    } catch {
+      alert("Could not connect to checkout. Please try again.");
+    } finally {
+      setCheckoutLoading(null);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -438,7 +460,8 @@ export default function Home() {
                 highlight: false,
                 features: ["Upload your payslip", "Compare to award minimum rates", "See your classification level", "Identify the gap in dollars", "Link to FWO official tools"],
                 cta: "Start free",
-                ctaHref: "#early-access",
+                ctaHref: "/auth/login",
+                ctaMode: "link" as const,
               },
               {
                 name: "Plus",
@@ -447,7 +470,10 @@ export default function Home() {
                 highlight: true,
                 features: ["Everything in Free", "Duties analysis — correct level check", "Full underpayment calculation", "PEACE cognitive interview", "Chronology and evidence log", "Claim roadmap and next steps"],
                 cta: "Get early access",
-                ctaHref: "#early-access",
+                ctaHref: "",
+                ctaMode: "checkout" as const,
+                priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PLUS_WEEKLY || "price_1TFrhUQ1Be0MYtutV2W6anSj",
+                checkoutMode: "subscription" as const,
               },
               {
                 name: "Matter Pack",
@@ -455,8 +481,11 @@ export default function Home() {
                 period: "one-time per matter",
                 highlight: false,
                 features: ["Everything in Plus", "Complete document preparation", "Case law surfacing", "Procedural roadmap", "Matter summary PDF", "Ready for FWO lodgement or lawyer review"],
-                cta: "Join waitlist",
-                ctaHref: "#early-access",
+                cta: "Get the Matter Pack",
+                ctaHref: "",
+                ctaMode: "checkout" as const,
+                priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_MATTER_PACK || "price_1TFrhYQ1Be0MYtutYI2Nyzba",
+                checkoutMode: "payment" as const,
               },
             ].map((plan) => (
               <div key={plan.name} className={`rounded-2xl p-6 border-2 ${plan.highlight ? "border-[#C9A84C] bg-[#1B3A5C] shadow-xl shadow-[#1B3A5C]/20" : "border-gray-200 bg-white"}`}>
@@ -471,9 +500,22 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <a href={plan.ctaHref} className={`block text-center py-3 rounded-xl font-semibold text-sm transition-all ${plan.highlight ? "bg-[#C9A84C] hover:bg-[#b8963e] text-white" : "border-2 border-[#1B3A5C] text-[#1B3A5C] hover:bg-[#1B3A5C] hover:text-white"}`}>
-                  {plan.cta}
-                </a>
+                {((plan as {ctaMode?: string}).ctaMode === "checkout") ? (
+                  <button
+                    onClick={() => handleCheckout(
+                      (plan as {priceId: string}).priceId,
+                      (plan as {checkoutMode: "payment" | "subscription"}).checkoutMode
+                    )}
+                    disabled={checkoutLoading !== null}
+                    className={`w-full text-center py-3 rounded-xl font-semibold text-sm transition-all disabled:opacity-60 ${plan.highlight ? "bg-[#C9A84C] hover:bg-[#b8963e] text-white" : "border-2 border-[#1B3A5C] text-[#1B3A5C] hover:bg-[#1B3A5C] hover:text-white"}`}
+                  >
+                    {checkoutLoading === (plan as {priceId: string}).priceId ? "Redirecting..." : plan.cta}
+                  </button>
+                ) : (
+                  <a href={plan.ctaHref} className={`block text-center py-3 rounded-xl font-semibold text-sm transition-all ${plan.highlight ? "bg-[#C9A84C] hover:bg-[#b8963e] text-white" : "border-2 border-[#1B3A5C] text-[#1B3A5C] hover:bg-[#1B3A5C] hover:text-white"}`}>
+                    {plan.cta}
+                  </a>
+                )}
               </div>
             ))}
           </div>

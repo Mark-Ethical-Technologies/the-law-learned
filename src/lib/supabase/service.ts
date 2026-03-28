@@ -17,3 +17,15 @@ export function createServiceClient() {
     }
   );
 }
+
+// Singleton accessor used by awards modules
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _serviceClient: any = null;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getServiceClient(): any {
+  if (!_serviceClient) {
+    _serviceClient = createServiceClient();
+  }
+  return _serviceClient;
+}

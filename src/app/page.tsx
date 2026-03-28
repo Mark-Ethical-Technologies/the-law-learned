@@ -21,20 +21,28 @@ const LANGUAGES = [
   { code: "ne", name: "नेपाली", english: "Nepali", searchTerm: "उचित काम सहायता" },
   { code: "hi", name: "हिन्दी", english: "Hindi", searchTerm: "उचित काम सहायता" },
   { code: "pa", name: "ਪੰਜਾਬੀ", english: "Punjabi", searchTerm: "ਨਿਆਂਪੂਰਨ ਕੰਮ ਮਦਦ" },
+  { code: "ur", name: "اردو", english: "Urdu", searchTerm: "منصفانہ کام کی مدد" },
   { code: "ta", name: "தமிழ்", english: "Tamil", searchTerm: "நியாயமான வேலை உதவி" },
+  { code: "si", name: "සිංහල", english: "Sinhala", searchTerm: "සාධාරණ කාර්ය සහාය" },
+  { code: "my", name: "မြန်မာ", english: "Burmese", searchTerm: "မျှတသောအလုပ်အကူအညီ" },
   { code: "tl", name: "Filipino", english: "Tagalog", searchTerm: "Tulong sa Makatarungang Trabaho" },
+  { code: "th", name: "ภาษาไทย", english: "Thai", searchTerm: "ความช่วยเหลือด้านงานที่เป็นธรรม" },
+  { code: "id", name: "Indonesia", english: "Indonesian", searchTerm: "Bantuan kerja yang adil" },
+  { code: "vi", name: "Tiếng Việt", english: "Vietnamese", searchTerm: "Hỗ trợ công việc công bằng" },
   { code: "zh", name: "普通话", english: "Mandarin", searchTerm: "公平工作帮助" },
   { code: "yue", name: "廣東話", english: "Cantonese", searchTerm: "公平工作幫助" },
-  { code: "vi", name: "Tiếng Việt", english: "Vietnamese", searchTerm: "Hỗ trợ công việc công bằng" },
-  { code: "ar", name: "العربية", english: "Arabic", searchTerm: "مساعدة عادلة في العمل" },
   { code: "ko", name: "한국어", english: "Korean", searchTerm: "공정한 업무 지원" },
+  { code: "ja", name: "日本語", english: "Japanese", searchTerm: "公正な労働支援" },
+  { code: "es", name: "Español", english: "Spanish", searchTerm: "Ayuda laboral justa" },
+  { code: "ar", name: "العربية", english: "Arabic", searchTerm: "مساعدة عادلة في العمل" },
+  { code: "other", name: "Other →", english: "All languages", searchTerm: "" },
 ];
 
 const STATS = [
   { value: 47000, suffix: "+", label: "Australian workers potentially underpaid right now", prefix: "" },
-  { value: 23000, suffix: "", label: "Average underpayment recovered per claim", prefix: "$" },
-  { value: 6, suffix: " years", label: "Maximum back-pay period under Fair Work Act", prefix: "" },
-  { value: 48000, suffix: "", label: "Maximum Level 1→5 security guard backpay (6 years)", prefix: "$" },
+  { value: 23000, suffix: "", label: "Average underpayment recovered per wage claim", prefix: "$" },
+  { value: 6, suffix: " years", label: "Maximum back-pay period under the Fair Work Act", prefix: "" },
+  { value: 120, suffix: "+", label: "Modern awards covering Australian workers — we know every one", prefix: "" },
 ];
 
 function AnimatedCounter({ target, prefix = "", suffix = "", duration = 2000 }: { target: number; prefix?: string; suffix?: string; duration?: number }) {
@@ -108,7 +116,7 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <a href="/security-industry-award" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors">Security Award Guide</a>
+            <a href="/security-industry-award" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors">Award Guides</a>
             <a href="#how-it-works" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors">How it works</a>
             <a href="#early-access" className="bg-[#C9A84C] hover:bg-[#b8963e] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
               Check my pay
@@ -140,8 +148,8 @@ export default function Home() {
               <a href="#early-access" className="bg-[#C9A84C] hover:bg-[#b8963e] text-white font-bold px-8 py-4 rounded-xl text-lg transition-all hover:scale-105 text-center shadow-lg shadow-[#C9A84C]/25">
                 Check my payslip — it's free
               </a>
-              <a href="/security-industry-award" className="border border-white/30 hover:border-white/60 text-white font-semibold px-8 py-4 rounded-xl text-lg transition-all text-center">
-                Security Award Guide →
+              <a href="#how-it-works" className="border border-white/30 hover:border-white/60 text-white font-semibold px-8 py-4 rounded-xl text-lg transition-all text-center">
+                How it works →
               </a>
             </div>
             <p className="mt-4 text-white/40 text-sm">
@@ -205,7 +213,7 @@ export default function Home() {
                 </div>
               </div>
               <ul className="space-y-2 text-sm text-gray-600">
-                {["Analyses your actual payslip against award rates","Detects classification level misclassification","PEACE cognitive interview — tell your story once","Document preparation and chronology building","11 languages including Bengali, Nepali, Tamil","Award navigation guide — finds what FWO makes hard","Prepares your case for FWO lodgement or legal review"].map((item, i) => (
+                {["Analyses your actual payslip against award rates","Detects classification level misclassification","PEACE cognitive interview — tell your story once","Document preparation and chronology building","18 languages — all major migrant worker communities","Award navigation guide — finds what FWO makes hard","Prepares your case for FWO lodgement or legal review"].map((item, i) => (
                   <li key={i} className="flex items-start gap-2"><span className="text-[#C9A84C] mt-0.5 shrink-0">✓</span>{item}</li>
                 ))}
               </ul>
@@ -317,13 +325,20 @@ export default function Home() {
             Your language. Your rights.
           </h2>
           <p className="text-white/50 mb-10 max-w-xl mx-auto">Fair Work Help is built for Australia's multicultural workforce. Tell your story in the language you think in.</p>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-10">
+          <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-9 gap-3 mb-10">
             {LANGUAGES.map((lang) => (
-              <div key={lang.code} className="bg-white/5 border border-white/10 hover:border-[#C9A84C]/50 hover:bg-white/10 rounded-xl p-3 transition-all cursor-pointer group">
-                <div className="text-white font-bold text-sm">{lang.name}</div>
-                <div className="text-white/40 text-xs group-hover:text-white/60">{lang.english}</div>
-                <span className="sr-only">{lang.searchTerm}</span>
-              </div>
+              lang.code === "other" ? (
+                <a key={lang.code} href="/languages" className="bg-[#C9A84C]/10 border border-[#C9A84C]/30 hover:border-[#C9A84C]/70 hover:bg-[#C9A84C]/20 rounded-xl p-3 transition-all cursor-pointer group">
+                  <div className="text-[#C9A84C] font-bold text-sm">{lang.name}</div>
+                  <div className="text-[#C9A84C]/60 text-xs group-hover:text-[#C9A84C]/80">{lang.english}</div>
+                </a>
+              ) : (
+                <div key={lang.code} className="bg-white/5 border border-white/10 hover:border-[#C9A84C]/50 hover:bg-white/10 rounded-xl p-3 transition-all cursor-pointer group">
+                  <div className="text-white font-bold text-sm">{lang.name}</div>
+                  <div className="text-white/40 text-xs group-hover:text-white/60">{lang.english}</div>
+                  <span className="sr-only">{lang.searchTerm}</span>
+                </div>
+              )
             ))}
           </div>
           {/* Hidden SEO text for multilingual search */}

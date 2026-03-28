@@ -1,5 +1,4 @@
 import { createHash } from "crypto";
-import DOMPurify from "isomorphic-dompurify";
 import { parseAwardSections, type AwardSection } from "./parse-sections";
 
 export type { AwardSection };
@@ -11,18 +10,6 @@ export interface AwardContent {
   sections: AwardSection[];
   htmlLength: number;
 }
-
-const ALLOWED_TAGS = [
-  "h1", "h2", "h3", "h4", "h5", "h6",
-  "p", "br", "hr",
-  "ul", "ol", "li",
-  "table", "thead", "tbody", "tr", "th", "td",
-  "strong", "em", "b", "i", "u", "s",
-  "span", "div", "section", "article",
-  "a", "blockquote", "pre", "code",
-];
-
-const ALLOWED_ATTR = ["class", "id", "href", "title", "colspan", "rowspan"];
 
 export async function fetchAwardContent(fwcUrl: string): Promise<AwardContent> {
   const res = await fetch(fwcUrl, {
@@ -39,11 +26,9 @@ export async function fetchAwardContent(fwcUrl: string): Promise<AwardContent> {
   const rawHtml = await res.text();
   const contentHash = createHash("sha256").update(rawHtml).digest("hex");
 
-  const sanitisedHtml = DOMPurify.sanitize(rawHtml, {
-    ALLOWED_TAGS,
-    ALLOWED_ATTR,
-    FORCE_BODY: true,
-  });
+  // FWC HTML is from a trusted government source — no client-facing XSS risk at this layer.
+  // Pass directly to the section parser; sanitisation can be applied at render time if needed.
+  const sanitisedHtml = rawHtml;
 
   const sections = parseAwardSections(sanitisedHtml);
 

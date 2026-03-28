@@ -132,6 +132,14 @@ export default function SecurityIndustryAwardPage() {
   return (
     <div className="min-h-screen bg-[#F0F4F8] font-sans">
 
+      {/* Live award banner */}
+      <div className="bg-[#C9A84C] px-4 py-2 text-center text-sm">
+        <span className="text-white/80">Read the full live award text: </span>
+        <a href="/awards/security-services-industry-award-2020" className="text-white font-bold underline hover:no-underline">
+          Security Services Industry Award → Award Guides
+        </a>
+      </div>
+
       {/* NAV */}
       <nav className="sticky top-0 z-50 bg-[#1B3A5C] border-b border-white/10 shadow-lg">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">

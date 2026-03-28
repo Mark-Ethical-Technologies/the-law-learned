@@ -37,6 +37,7 @@ export default function PeaceInterviewPage() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [phase, setPhase] = useState("engage");
   const [authed, setAuthed] = useState(false);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -50,6 +51,30 @@ export default function PeaceInterviewPage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const downloadMatterPack = async () => {
+    if (!sessionId) return;
+    setGeneratingPdf(true);
+    try {
+      const res = await fetch("/api/matter-pack/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId }),
+      });
+      if (!res.ok) throw new Error("PDF generation failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `matter-pack-${Date.now()}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Could not generate PDF. Please try again.");
+    } finally {
+      setGeneratingPdf(false);
+    }
+  };
 
   const send = async () => {
     const text = input.trim();
@@ -138,6 +163,25 @@ export default function PeaceInterviewPage() {
           <div ref={messagesEndRef} />
         </div>
       </div>
+
+      {/* Matter Pack CTA — shown when interview reaches closure phase */}
+      {(phase === "closure" || phase === "evaluation" || phase === "complete") && sessionId && (
+        <div className="bg-[#1B3A5C] border-t border-white/10 px-4 py-4 shrink-0">
+          <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+              <div className="text-[#C9A84C] font-semibold text-sm mb-0.5">Your account is ready to document</div>
+              <div className="text-white/60 text-xs">Download your Matter Pack — privileged preparation file with your full account and next steps.</div>
+            </div>
+            <button
+              onClick={downloadMatterPack}
+              disabled={generatingPdf}
+              className="shrink-0 bg-[#C9A84C] hover:bg-[#b8963e] disabled:opacity-50 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all"
+            >
+              {generatingPdf ? "Generating PDF..." : "Download Matter Pack →"}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Input */}
       <div className="bg-white border-t border-gray-100 px-4 py-4 shrink-0">

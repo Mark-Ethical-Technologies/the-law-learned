@@ -2,6 +2,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getServiceClient } from "@/lib/supabase/service";
 
 const LANGUAGE_NAMES: Record<string, string> = {
+  bn: "Bengali",
+  ne: "Nepali",
   zh: "Mandarin Chinese",
   vi: "Vietnamese",
   ar: "Arabic",

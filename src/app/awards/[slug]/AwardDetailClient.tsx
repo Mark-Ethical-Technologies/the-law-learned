@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { AwardSectionCard } from "@/app/components/AwardSectionCard";
 
 const LANGUAGES: Record<string, string> = {
+  bn: "বাংলা (Bengali)",
+  ne: "नेपाली (Nepali)",
   zh: "Mandarin",
   vi: "Vietnamese",
   ar: "Arabic",

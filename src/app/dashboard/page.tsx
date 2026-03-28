@@ -82,6 +82,21 @@ export default async function Dashboard() {
           ))}
         </div>
 
+        {/* Shift tracker card */}
+        <div className="bg-[#1B3A5C] rounded-2xl p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="text-[#C9A84C] font-semibold text-sm mb-1">New</div>
+            <div className="text-white font-bold text-lg">Log my shifts</div>
+            <div className="text-white/50 text-sm mt-1">Track your hours and see if your penalty rates are being paid correctly.</div>
+          </div>
+          <a
+            href="/dashboard/shifts"
+            className="shrink-0 bg-[#C9A84C] hover:bg-[#d4b860] text-[#1B3A5C] font-bold px-6 py-3 rounded-xl transition-all text-sm"
+          >
+            Open shift tracker →
+          </a>
+        </div>
+
         {/* Profile summary */}
         {profile && (
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">

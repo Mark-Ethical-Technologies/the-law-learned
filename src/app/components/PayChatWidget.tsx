@@ -29,11 +29,17 @@ Tell me what you do and roughly what you're being paid. I'll let you know whethe
 
 What's your situation?`;
 
-export default function PayChatWidget() {
+interface PayChatWidgetProps {
+  defaultOpen?: boolean;
+  seedMessage?: string;
+}
+
+export default function PayChatWidget({ defaultOpen, seedMessage }: PayChatWidgetProps = {}) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen ?? false);
+  const seededRef = useRef(false);
 
   // Email capture
   const [showEmailCapture, setShowEmailCapture] = useState(false);
@@ -57,6 +63,14 @@ export default function PayChatWidget() {
   useEffect(() => {
     if (isOpen && inputRef.current) inputRef.current.focus();
   }, [isOpen]);
+
+  // Seed the input with a pre-filled message (once) when the widget opens
+  useEffect(() => {
+    if (isOpen && seedMessage && !seededRef.current) {
+      setInput(seedMessage);
+      seededRef.current = true;
+    }
+  }, [isOpen, seedMessage]);
 
   // Show email capture after 2nd assistant response
   useEffect(() => {

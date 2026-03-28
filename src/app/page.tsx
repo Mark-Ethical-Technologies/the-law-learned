@@ -66,7 +66,7 @@ export default function Home() {
       <nav className="border-b border-[#1B3A5C]/10 px-6 py-4 flex items-center justify-between max-w-6xl mx-auto">
         <div className="flex items-center gap-2">
           <span className="text-xl font-bold text-[#1B3A5C]">Fair Work Help</span>
-          <span className="text-xs bg-[#C9A84C]/20 text-[#C9A84C] font-semibold px-2 py-0.5 rounded-full">by The Law Learned</span>
+          <span className="text-xs bg-[#C9A84C]/20 text-[#C9A84C] font-semibold px-2 py-0.5 rounded-full">by Ethical Technologies</span>
         </div>
         <a href="#early-access" className="text-sm font-semibold text-[#C9A84C] hover:underline">
           Get early access →

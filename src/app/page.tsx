@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import PayChatWidget from "./components/PayChatWidget";
+import { createClient } from "@/lib/supabase/client";
 
 const SECTORS = [
   { name: "Security", icon: "🛡️", award: "Security Services Industry Award", hook: "Level misclassification costs guards $6,000–$48,000", color: "from-blue-900 to-blue-800" },
@@ -104,6 +105,14 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [activeLang, setActiveLang] = useState<typeof LANGUAGES[0] | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsLoggedIn(!!user);
+    });
+  }, []);
 
   const handleCheckout = async (priceId: string, mode: "payment" | "subscription") => {
     setCheckoutLoading(priceId);
@@ -157,12 +166,20 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <a href="/security-industry-award" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors">Award Guides</a>
+            <a href="/awards" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors">Award Guides</a>
             <a href="#how-it-works" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors">How it works</a>
-            <a href="/auth/login" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors">Sign in</a>
-            <a href="/auth/login" className="bg-[#C9A84C] hover:bg-[#b8963e] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
-              Get started free
-            </a>
+            {isLoggedIn ? (
+              <a href="/dashboard" className="bg-[#C9A84C] hover:bg-[#b8963e] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                My account →
+              </a>
+            ) : (
+              <>
+                <a href="/auth/login" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors">Login</a>
+                <a href="/auth/login" className="bg-[#C9A84C] hover:bg-[#b8963e] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                  Get started free
+                </a>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -272,44 +289,30 @@ export default function Home() {
             <div className="flex-1">
               <div className="text-[#C9A84C] text-sm font-semibold mb-2 uppercase tracking-wider">Security Industry Award MA000016</div>
               <h2 className="text-3xl font-bold text-white mb-4">Security guard? <br />You may be on the wrong level.</h2>
-              <p className="text-white/60 mb-6">The Security Services Industry Award has 5 classification levels. Most guards are paid Level 1 regardless of their actual duties. That gap — compounded over 6 years — can exceed $48,000 in backpay.</p>
-              <a href="/security-industry-award" className="inline-flex items-center gap-2 bg-[#C9A84C] hover:bg-[#b8963e] text-white font-bold px-6 py-3 rounded-xl transition-all hover:scale-105">
-                Read the complete Award Guide →
-              </a>
+              <p className="text-white/60 mb-6">The Security Services Industry Award has 5 classification levels. Most guards are paid Level 1 regardless of their actual duties. That gap — compounded over 6 years — adds up to significant backpay.</p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a href="/awards/security-services-industry-award-2020" className="inline-flex items-center gap-2 bg-[#C9A84C] hover:bg-[#b8963e] text-white font-bold px-6 py-3 rounded-xl transition-all hover:scale-105">
+                  Read the Award Guide →
+                </a>
+                <a href="/awards" className="inline-flex items-center gap-2 border border-white/20 text-white/70 hover:text-white hover:border-white/40 font-semibold px-6 py-3 rounded-xl transition-all">
+                  Browse all awards →
+                </a>
+              </div>
             </div>
             <div className="flex-1">
-              <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-                <div className="bg-white/10 px-4 py-3 border-b border-white/10">
-                  <span className="text-white/60 text-xs font-mono">Security Industry Award 2024–25 pay rates</span>
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                <div className="text-[#C9A84C] font-semibold text-sm mb-4">Why classification matters</div>
+                <div className="space-y-3">
+                  {["5 classification levels — not just Level 1", "Level determines your base rate, overtime, and allowances", "6-year limitation period applies to underpayment claims", "Misclassification is the most common underpayment pattern"].map((point) => (
+                    <div key={point} className="flex items-start gap-2">
+                      <span className="text-[#C9A84C] mt-0.5">✓</span>
+                      <span className="text-white/60 text-sm">{point}</span>
+                    </div>
+                  ))}
                 </div>
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="px-4 py-2 text-left text-white/40 text-xs">Level</th>
-                      <th className="px-4 py-2 text-right text-white/40 text-xs">Hourly</th>
-                      <th className="px-4 py-2 text-right text-white/40 text-xs">Annual (FT)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      { level: "Level 1", hourly: "$25.27", annual: "$49,934", highlight: false },
-                      { level: "Level 2", hourly: "$25.62", annual: "$50,625", highlight: false },
-                      { level: "Level 3", hourly: "$26.19", annual: "$51,751", highlight: true },
-                      { level: "Level 4", hourly: "$26.76", annual: "$52,877", highlight: false },
-                      { level: "Level 5", hourly: "$27.74", annual: "$54,813", highlight: false },
-                    ].map((row) => (
-                      <tr key={row.level} className={`border-b border-white/5 ${row.highlight ? "bg-[#C9A84C]/10" : ""}`}>
-                        <td className="px-4 py-3 text-white font-medium">{row.level}</td>
-                        <td className="px-4 py-3 text-right text-white/70 font-mono">{row.hourly}</td>
-                        <td className="px-4 py-3 text-right text-[#C9A84C] font-mono font-semibold">{row.annual}</td>
-                      </tr>
-                    ))}
-                    <tr className="bg-red-500/10">
-                      <td colSpan={2} className="px-4 py-3 text-red-300 text-xs">L1→L5 gap over 6 years (incl. weekends)</td>
-                      <td className="px-4 py-3 text-right text-red-300 font-bold font-mono">$48,000+</td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div className="mt-5 pt-4 border-t border-white/10 text-white/30 text-xs">
+                  Read the full award to check your classification. The AI can help you interpret it.
+                </div>
               </div>
             </div>
           </div>
@@ -349,7 +352,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {SECTORS.map((sector) => (
-              <a key={sector.name} href={sector.name === "Security" ? "/security-industry-award" : "#early-access"}
+              <a key={sector.name} href="/awards"
                 className="group bg-[#1B3A5C] hover:bg-[#C9A84C] rounded-2xl p-4 transition-all duration-200 cursor-pointer hover:scale-105 hover:shadow-xl hover:shadow-[#C9A84C]/20">
                 <div className="text-2xl mb-2">{sector.icon}</div>
                 <div className="text-white font-bold text-sm mb-1">{sector.name}</div>
@@ -579,10 +582,10 @@ export default function Home() {
             <div>
               <div className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3">Award Guides</div>
               <ul className="space-y-2 text-xs text-white/40">
-                <li><a href="/security-industry-award" className="hover:text-white/70 transition-colors">Security Industry Award</a></li>
-                <li><a href="#early-access" className="hover:text-white/70 transition-colors">Nurses Award (coming soon)</a></li>
-                <li><a href="#early-access" className="hover:text-white/70 transition-colors">SCHADS Award (coming soon)</a></li>
-                <li><a href="#early-access" className="hover:text-white/70 transition-colors">Aged Care Award (coming soon)</a></li>
+                <li><a href="/awards" className="hover:text-white/70 transition-colors">Browse all awards →</a></li>
+                <li><a href="/awards/security-services-industry-award-2020" className="hover:text-white/70 transition-colors">Security Industry Award</a></li>
+                <li><a href="/awards/nurses-award-2020" className="hover:text-white/70 transition-colors">Nurses Award</a></li>
+                <li><a href="/awards/social-community-home-care-and-disability-services-industry-award-2010" className="hover:text-white/70 transition-colors">SCHADS Award</a></li>
               </ul>
             </div>
             <div>

@@ -4,6 +4,15 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
+const ONBOARDING_LANGS = [
+  { text: "Let's build your profile" },
+  { text: "உங்கள் சுயவிவரத்தை உருவாக்குவோம்" },      // Tamil
+  { text: "Hãy xây dựng hồ sơ của bạn" },              // Vietnamese
+  { text: "让我们建立您的档案" },                          // Mandarin
+  { text: "चलिए आपकी प्रोफ़ाइल बनाते हैं" },           // Hindi
+  { text: "Buuin natin ang iyong profile" },            // Tagalog
+];
+
 const INDUSTRIES = [
   "Security", "Healthcare & Nursing", "Aged Care", "NDIS & Disability",
   "Retail", "Hospitality", "Fast Food", "Cleaning", "Childcare",
@@ -24,6 +33,7 @@ export default function ProfileSetup() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [langIdx, setLangIdx] = useState(0);
 
   const [form, setForm] = useState({
     firstName: "",
@@ -40,12 +50,19 @@ export default function ProfileSetup() {
     });
   }, [supabase, router]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLangIdx((i) => (i + 1) % ONBOARDING_LANGS.length);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, []);
+
   const progress = Math.round(((step - 1) / (STEPS.length - 1)) * 100);
 
   const handleNext = async () => {
-    if (step < STEPS.length - 1) {
+    if (step < 4) {
       setStep(step + 1);
-    } else if (step === STEPS.length - 1) {
+    } else if (step === 4) {
       // Save profile
       setLoading(true);
       if (userId) {
@@ -62,8 +79,6 @@ export default function ProfileSetup() {
       }
       setLoading(false);
       setStep(5);
-    } else {
-      router.push("/dashboard");
     }
   };
 
@@ -78,6 +93,13 @@ export default function ProfileSetup() {
   return (
     <div className="min-h-screen bg-[#1B3A5C] flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-lg">
+        {/* Bilingual welcome */}
+        <div className="text-center mb-4 h-8 flex items-center justify-center">
+          <p className="text-[#C9A84C]/80 text-sm transition-all duration-500">
+            {ONBOARDING_LANGS[langIdx].text}
+          </p>
+        </div>
+
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">
           <div className="w-8 h-8 bg-[#C9A84C] rounded-lg flex items-center justify-center text-white font-bold text-sm">FW</div>
@@ -205,51 +227,65 @@ export default function ProfileSetup() {
             </div>
           )}
 
-          {/* Step 5: Quick win */}
+          {/* Step 5: Plan selection */}
           {step === 5 && (
             <div>
               <div className="text-4xl mb-4">🎯</div>
               <h2 className="text-white font-bold text-2xl mb-2">
-                Welcome, {form.firstName}. Here&apos;s what to check first.
+                Profile saved, {form.firstName}. Choose your plan.
               </h2>
-              <div className="space-y-3 mb-6 mt-4">
-                <div className="bg-[#C9A84C]/10 border border-[#C9A84C]/30 rounded-xl p-4">
-                  <div className="text-[#C9A84C] font-semibold text-sm mb-1">
-                    ✓ Your profile is saved
+              <p className="text-white/50 text-sm mb-6">
+                Start free — upgrade anytime when you&apos;re ready to go further.
+              </p>
+              <div className="space-y-3">
+                <div className="bg-white/5 border border-white/10 rounded-xl p-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-white font-bold">Free</span>
+                    <span className="text-[#C9A84C] font-bold">$0</span>
                   </div>
-                  <div className="text-white/60 text-xs">
-                    {form.industry} · {form.employer} · ${form.payRate}/{form.payType === "hourly" ? "hr" : "yr"}
-                  </div>
+                  <ul className="text-white/50 text-sm space-y-1 mb-4">
+                    <li>✓ AI chat — triage your situation</li>
+                    <li>✓ Award Guides — read your award</li>
+                    <li>✓ Shift tracker — log your hours</li>
+                  </ul>
+                  <button
+                    onClick={() => router.push("/dashboard")}
+                    className="w-full py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl text-sm transition-all"
+                  >
+                    Continue with free →
+                  </button>
                 </div>
-                <div className="bg-white/5 rounded-xl p-4">
-                  <div className="text-white font-semibold text-sm mb-1">Next: Upload your payslip</div>
-                  <div className="text-white/50 text-xs">
-                    Our AI will compare your actual pay against your award rate and flag any gaps.
+                <div className="bg-[#C9A84C]/10 border border-[#C9A84C]/40 rounded-xl p-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[#C9A84C] font-bold">Plus</span>
+                    <span className="text-[#C9A84C] font-bold">$4.99/week</span>
                   </div>
-                </div>
-                <div className="bg-white/5 rounded-xl p-4">
-                  <div className="text-white font-semibold text-sm mb-1">Check your classification level</div>
-                  <div className="text-white/50 text-xs">
-                    Most {form.industry.toLowerCase()} workers are on the wrong pay level. We&apos;ll check yours.
-                  </div>
-                </div>
-                <div className="bg-white/5 rounded-xl p-4">
-                  <div className="text-white font-semibold text-sm mb-1">Review your last 3 months of rosters</div>
-                  <div className="text-white/50 text-xs">
-                    Ghost hours and off-the-clock time add up. We can calculate the exact dollar value.
-                  </div>
+                  <ul className="text-white/70 text-sm space-y-1 mb-4">
+                    <li>✓ Everything in Free</li>
+                    <li>✓ Payslip upload + AI analysis</li>
+                    <li>✓ Full underpayment calculation</li>
+                    <li>✓ Document upload for evidence</li>
+                  </ul>
+                  <button
+                    onClick={() => router.push("/dashboard")}
+                    className="w-full py-3 bg-[#C9A84C] hover:bg-[#b8963e] text-white font-bold rounded-xl text-sm transition-all"
+                  >
+                    Upgrade to Plus — $4.99/wk →
+                  </button>
                 </div>
               </div>
             </div>
           )}
 
-          <button
-            onClick={handleNext}
-            disabled={!canProgress() || loading}
-            className="w-full mt-6 bg-[#C9A84C] hover:bg-[#b8963e] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-all text-lg"
-          >
-            {loading ? "Saving..." : step === 5 ? "Go to my dashboard →" : step === 4 ? "Analyse my pay →" : "Continue →"}
-          </button>
+          {step < 5 && (
+            <button
+              onClick={handleNext}
+              disabled={!canProgress() || loading}
+              className="w-full mt-6 bg-[#C9A84C] hover:bg-[#b8963e] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-all text-lg"
+            >
+              {loading ? "Saving..." : step === 4 ? "Save my profile →" : "Continue →"}
+            </button>
+          )}
         </div>
       </div>
     </div>

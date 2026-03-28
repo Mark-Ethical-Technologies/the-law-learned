@@ -4,6 +4,15 @@ import { useState, useEffect, Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useSearchParams } from "next/navigation";
 
+const WELCOME_LANGUAGES = [
+  { lang: "English", text: "Are you being paid correctly?" },
+  { lang: "Tamil", text: "நீங்கள் சரியான ஊதியம் பெறுகிறீர்களா?" },
+  { lang: "Vietnamese", text: "Bạn có được trả lương đúng không?" },
+  { lang: "Mandarin", text: "你是否获得了正确的薪酬？" },
+  { lang: "Hindi", text: "क्या आपको सही वेतन मिल रहा है?" },
+  { lang: "Tagalog", text: "Nabibigyan ka ba ng tamang sahod?" },
+];
+
 function LoginForm() {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/profile/setup";
@@ -13,7 +22,15 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState(errorParam || "");
+  const [langIdx, setLangIdx] = useState(0);
   const supabase = createClient();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLangIdx((i) => (i + 1) % WELCOME_LANGUAGES.length);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (errorParam === "auth_failed") setError("Sign-in failed. Please try again.");
@@ -60,8 +77,15 @@ function LoginForm() {
   return (
     <div className="min-h-screen bg-[#1B3A5C] flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-md">
+        {/* Bilingual rotating headline */}
+        <div className="text-center mb-6 h-10 flex items-center justify-center">
+          <p className="text-[#C9A84C] font-semibold text-lg transition-all duration-500">
+            {WELCOME_LANGUAGES[langIdx].text}
+          </p>
+        </div>
+
         {/* Logo */}
-        <div className="flex items-center justify-center gap-3 mb-10">
+        <div className="flex items-center justify-center gap-3 mb-8">
           <div className="w-10 h-10 bg-[#C9A84C] rounded-xl flex items-center justify-center text-white font-bold">FW</div>
           <div>
             <div className="text-white font-bold text-xl">Fair Work Help</div>
@@ -145,6 +169,14 @@ function LoginForm() {
 
         <div className="text-center mt-6">
           <a href="/" className="text-white/30 hover:text-white/60 text-sm transition-colors">← Back to Fair Work Help</a>
+        </div>
+
+        {/* Language strip */}
+        <div className="mt-6 flex flex-wrap justify-center gap-2">
+          {WELCOME_LANGUAGES.slice(1).map((l) => (
+            <span key={l.lang} className="text-white/20 text-xs">{l.lang}</span>
+          ))}
+          <span className="text-white/15 text-xs">· More languages available</span>
         </div>
       </div>
     </div>

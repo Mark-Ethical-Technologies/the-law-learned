@@ -22,8 +22,6 @@ export const metadata: Metadata = {
 const LEVELS = [
   {
     level: "Level 1",
-    hourly: 25.27,
-    annual: 49934,
     title: "Security Officer Grade 1",
     duties: [
       "Static guarding — monitoring a fixed location",
@@ -36,8 +34,6 @@ const LEVELS = [
   },
   {
     level: "Level 2",
-    hourly: 25.62,
-    annual: 50625,
     title: "Security Officer Grade 2",
     duties: [
       "All Level 1 duties",
@@ -50,8 +46,6 @@ const LEVELS = [
   },
   {
     level: "Level 3",
-    hourly: 26.19,
-    annual: 51751,
     title: "Security Officer Grade 3",
     duties: [
       "All Level 2 duties",
@@ -66,8 +60,6 @@ const LEVELS = [
   },
   {
     level: "Level 4",
-    hourly: 26.76,
-    annual: 52877,
     title: "Security Officer Grade 4 / Supervisor",
     duties: [
       "All Level 3 duties",
@@ -80,8 +72,6 @@ const LEVELS = [
   },
   {
     level: "Level 5",
-    hourly: 27.74,
-    annual: 54813,
     title: "Security Officer Grade 5 / Senior Supervisor",
     duties: [
       "All Level 4 duties",
@@ -96,9 +86,9 @@ const LEVELS = [
 
 const PENALTY_RATES = [
   { type: "Ordinary weekday (Mon–Fri)", rate: "100%", example: "Base rate only" },
-  { type: "Saturday", rate: "125%", example: "$25.27 × 1.25 = $31.59/hr (L1)" },
-  { type: "Sunday", rate: "150%", example: "$25.27 × 1.50 = $37.91/hr (L1)" },
-  { type: "Public holiday", rate: "225%", example: "$25.27 × 2.25 = $56.86/hr (L1)" },
+  { type: "Saturday", rate: "125%", example: "Base rate × 1.25" },
+  { type: "Sunday", rate: "150%", example: "Base rate × 1.50" },
+  { type: "Public holiday", rate: "225%", example: "Base rate × 2.25" },
   { type: "Overtime (first 2 hrs)", rate: "150%", example: "After 8 hrs on weekday" },
   { type: "Overtime (beyond 2 hrs)", rate: "200%", example: "Double time" },
   { type: "Shift allowance (afternoon)", rate: "+15%", example: "Finishing after midnight" },
@@ -109,32 +99,32 @@ const COMMON_VIOLATIONS = [
   {
     violation: "Wrong classification level",
     how: "Employer places all guards on Level 1 regardless of duties — dog handling, CIT, training others, or CCTV operation all require higher levels.",
-    impact: "Can mean $1,000–$8,000/year underpayment per guard.",
+    impact: "Significant annual underpayment — use the AI to calculate your specific gap.",
   },
   {
     violation: "Unpaid Sunday penalty rates",
     how: "Rostered Sunday shifts paid at flat rate or slightly higher rate, not the required 150%.",
-    impact: "A guard doing one Sunday shift per week loses ~$2,000/year.",
+    impact: "Accumulates substantially over weekly Sunday shifts — 6-year limitation applies.",
   },
   {
     violation: "Missed shift allowances",
     how: "Night shifts (majority of hours between midnight and 6am) must attract a 30% loading. Afternoon shifts finishing after midnight: 15%. Often not paid.",
-    impact: "$50–$200 per affected shift.",
+    impact: "Applies to every affected shift over the 6-year limitation period.",
   },
   {
     violation: "Cash-in-transit not on Level 3",
     how: "CIT operations legally require Level 3 classification. Guards doing CIT on Level 1 or 2 rates are underpaid every shift.",
-    impact: "~$900/year minimum per guard.",
+    impact: "Every CIT shift at the wrong level is a recoverable underpayment.",
   },
   {
     violation: "Unpaid overtime",
     how: "Guard asked to stay back but overtime paid at flat rate or not at all. The award requires 150% for the first 2 hours, 200% after.",
-    impact: "Significant — depends on how often it occurs.",
+    impact: "Depends on frequency — the AI can calculate your total from your shift history.",
   },
   {
     violation: "Meal breaks deducted but not provided",
     how: "Guard rostered for 8+ hours, 30-min break deducted from pay, but guard never actually gets a break due to operational requirements.",
-    impact: "Paid 30 mins less per shift than worked.",
+    impact: "30 minutes of unpaid work per affected shift.",
   },
 ];
 
@@ -168,7 +158,7 @@ export default function SecurityIndustryAwardPage() {
           </p>
           <div className="flex flex-wrap gap-3 mb-8">
             <a href="#classification" className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition-colors">Classification Levels →</a>
-            <a href="#pay-rates" className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition-colors">Pay Rates 2025 →</a>
+            <a href="#pay-rates" className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition-colors">Pay Rates (Live) →</a>
             <a href="#penalty-rates" className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition-colors">Penalty Rates →</a>
             <a href="#violations" className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition-colors">Common Violations →</a>
             <a href="#pdf" className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition-colors">Official PDF ↗</a>
@@ -190,8 +180,8 @@ export default function SecurityIndustryAwardPage() {
           {[
             { value: "MA000016", label: "Award reference number" },
             { value: "5", label: "Classification levels" },
-            { value: "$25.27", label: "Level 1 base rate (2024–25)" },
-            { value: "$48,000+", label: "Max 6-year backpay (L1→L5)" },
+            { value: "6 years", label: "Maximum backpay limitation period" },
+            { value: "FWC", label: "Live rates at fairwork.gov.au" },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="text-2xl font-extrabold text-[#C9A84C]">{stat.value}</div>
@@ -215,10 +205,10 @@ export default function SecurityIndustryAwardPage() {
                     <span className={`ml-3 text-sm ${level.highlight ? "text-white/60" : "text-gray-500"}`}>{level.title}</span>
                     {level.highlight && <span className="ml-3 text-xs bg-[#C9A84C]/20 text-[#C9A84C] px-2 py-0.5 rounded-full">Most misclassified</span>}
                   </div>
-                  <div className="text-right">
-                    <div className={`font-bold text-xl ${level.highlight ? "text-white" : "text-[#1B3A5C]"}`}>${level.hourly.toFixed(2)}/hr</div>
-                    <div className={`text-xs ${level.highlight ? "text-white/40" : "text-gray-400"}`}>${level.annual.toLocaleString()}/yr full-time</div>
-                  </div>
+                  <a href="https://www.fairwork.gov.au/pay-and-wages/pay-calculator" target="_blank" rel="noopener noreferrer"
+                    className={`text-xs underline ${level.highlight ? "text-white/40 hover:text-white/70" : "text-gray-400 hover:text-gray-600"}`}>
+                    Check live rate ↗
+                  </a>
                 </div>
                 <div className="px-6 py-4 bg-white">
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Duties at this level include:</p>
@@ -244,43 +234,23 @@ export default function SecurityIndustryAwardPage() {
         </div>
       </section>
 
-      {/* PAY RATES */}
+      {/* PAY RATES — redirect to live source */}
       <section id="pay-rates" className="py-16 bg-[#F0F4F8]">
         <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-[#1B3A5C] mb-2">Pay rates 2024–2025</h2>
-          <p className="text-gray-500 mb-6">These are the minimum base hourly rates from 1 July 2024. Penalty rates (weekends, nights, public holidays) are on top of these.</p>
-          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-[#1B3A5C] text-white">
-                  <th className="px-5 py-4 text-left font-semibold">Level</th>
-                  <th className="px-5 py-4 text-left font-semibold hidden md:table-cell">Title</th>
-                  <th className="px-5 py-4 text-right font-semibold">Hourly</th>
-                  <th className="px-5 py-4 text-right font-semibold">Weekly (38hr)</th>
-                  <th className="px-5 py-4 text-right font-semibold">Annual (FT)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {LEVELS.map((level, i) => (
-                  <tr key={level.level} className={`border-b border-gray-50 ${i % 2 === 0 ? "bg-white" : "bg-gray-50/50"} ${level.highlight ? "ring-2 ring-inset ring-[#C9A84C]/30" : ""}`}>
-                    <td className="px-5 py-4 font-bold text-[#1B3A5C]">{level.level}</td>
-                    <td className="px-5 py-4 text-gray-500 hidden md:table-cell">{level.title}</td>
-                    <td className="px-5 py-4 text-right font-mono font-semibold text-[#1B3A5C]">${level.hourly.toFixed(2)}</td>
-                    <td className="px-5 py-4 text-right font-mono text-gray-600">${(level.hourly * 38).toFixed(2)}</td>
-                    <td className="px-5 py-4 text-right font-mono font-bold text-[#C9A84C]">${level.annual.toLocaleString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr className="bg-red-50">
-                  <td colSpan={3} className="px-5 py-3 text-sm text-red-700 font-medium">Level 1 to Level 5 gap</td>
-                  <td className="px-5 py-3 text-right font-mono text-red-700">$2.47/hr</td>
-                  <td className="px-5 py-3 text-right font-bold font-mono text-red-700">$4,879/yr</td>
-                </tr>
-              </tfoot>
-            </table>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1B3A5C] mb-2">Pay rates</h2>
+          <p className="text-gray-500 mb-6">Award pay rates are updated annually by the Fair Work Commission. We link to the live official source rather than publish figures that may become outdated.</p>
+          <div className="grid md:grid-cols-2 gap-4">
+            <a href="https://www.fairwork.gov.au/pay-and-wages/pay-calculator" target="_blank" rel="noopener noreferrer"
+              className="bg-white border-2 border-[#1B3A5C] hover:border-[#C9A84C] rounded-2xl p-6 transition-all group">
+              <div className="font-bold text-[#1B3A5C] group-hover:text-[#C9A84C] transition-colors mb-2">FWO Pay Calculator ↗</div>
+              <p className="text-gray-500 text-sm">Enter your award and classification — the Fair Work Ombudsman calculates your current minimum rate.</p>
+            </a>
+            <a href="https://library.fairwork.gov.au/award/?krn=MA000016" target="_blank" rel="noopener noreferrer"
+              className="bg-white border-2 border-gray-100 hover:border-[#C9A84C] rounded-2xl p-6 transition-all group">
+              <div className="font-bold text-[#1B3A5C] group-hover:text-[#C9A84C] transition-colors mb-2">Full Award Document ↗</div>
+              <p className="text-gray-500 text-sm">Security Services Industry Award MA000016 — Schedule A contains the complete wage table.</p>
+            </a>
           </div>
-          <p className="mt-3 text-xs text-gray-400">Source: Security Services Industry Award MA000016, operative from 1 July 2024 per Annual Wage Review 2023–24. Rates subject to change. Always verify with the <a href="https://www.fairwork.gov.au" target="_blank" rel="noopener noreferrer" className="underline text-[#1B3A5C]">Fair Work Ombudsman</a>.</p>
         </div>
       </section>
 
@@ -301,8 +271,9 @@ export default function SecurityIndustryAwardPage() {
             ))}
           </div>
           <div className="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-5">
-            <h3 className="font-bold text-amber-900 mb-1">The Sunday shift calculation most guards don't know</h3>
-            <p className="text-amber-800 text-sm">A Level 1 guard doing a single 8-hour Sunday shift should earn $25.27 × 1.5 × 8 = <strong>$303.24</strong>. If you're being paid $202.16 (flat rate), you're short $101.08 per Sunday shift. Over a year of weekly Sunday shifts, that's <strong>$5,256 in missed payments</strong>.</p>
+            <h3 className="font-bold text-amber-900 mb-1">The Sunday shift gap most guards don't know</h3>
+            <p className="text-amber-800 text-sm">If you work Sundays at a flat rate rather than 150% of your base rate, every Sunday shift is a recoverable underpayment. Over a year of weekly Sunday shifts this compounds significantly — and the 6-year limitation period means years of back-pay may be available.</p>
+            <p className="text-amber-700 text-xs mt-2">Use the AI to calculate your specific gap from your actual pay rate and shift history.</p>
           </div>
         </div>
       </section>

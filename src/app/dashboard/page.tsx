@@ -62,22 +62,16 @@ export default async function Dashboard() {
         <div className="grid md:grid-cols-3 gap-5 mb-8">
           {[
             { icon: "💬", title: "Chat with the AI", desc: "Ask about your award, upload your payslip, or tell your story.", href: "/", cta: "Start chatting" },
-            { icon: "📄", title: "Upload a payslip", desc: "Compare your actual pay against your award classification.", href: "/", cta: "Upload now", premium: true },
-            { icon: "📋", title: "Get a Matter Pack", desc: "Full case preparation — calculation, demand letter, evidence file.", href: "/#pricing", cta: "Learn more — $299" },
+            { icon: "🎙️", title: "Start a Matter Interview", desc: "PEACE cognitive interview — document your situation for potential legal proceedings.", href: "/dashboard/matter/new", cta: "Begin interview" },
+            { icon: "📋", title: "Browse Award Guides", desc: "Read your Modern Award in plain English. Over 120 awards covered.", href: "/awards", cta: "Browse awards" },
           ].map((card) => (
             <div key={card.title} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
               <div className="text-3xl mb-3">{card.icon}</div>
               <h3 className="font-bold text-[#1B3A5C] mb-2">{card.title}</h3>
               <p className="text-gray-500 text-sm mb-4 leading-relaxed">{card.desc}</p>
-              {card.premium && tier === "free" ? (
-                <span className="inline-flex items-center gap-1 text-[#C9A84C] text-sm font-semibold">
-                  🔒 Plus feature
-                </span>
-              ) : (
-                <a href={card.href} className="inline-flex items-center gap-1 text-[#1B3A5C] font-semibold text-sm hover:underline">
-                  {card.cta} →
-                </a>
-              )}
+              <a href={card.href} className="inline-flex items-center gap-1 text-[#1B3A5C] font-semibold text-sm hover:underline">
+                {card.cta} →
+              </a>
             </div>
           ))}
         </div>

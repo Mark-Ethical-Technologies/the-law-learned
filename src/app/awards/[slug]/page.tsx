@@ -1,21 +1,12 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { AwardDetailClient } from "./AwardDetailClient";
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeAwardHtml } from "@/lib/awards/sanitize";
 import { parseAwardSections } from "@/lib/awards/parse-sections";
+import { fetchAwardContent } from "@/lib/awards/fetch-award-content";
+import { fetchAwardsList } from "@/lib/awards/fetch-awards-list";
 import type { Metadata } from "next";
-
-const ALLOWED_TAGS = [
-  "h1", "h2", "h3", "h4", "h5", "h6",
-  "p", "br", "hr",
-  "ul", "ol", "li",
-  "table", "thead", "tbody", "tr", "th", "td",
-  "strong", "em", "b", "i", "u", "s",
-  "span", "div", "section", "article",
-  "a", "blockquote", "pre", "code",
-];
-
-const ALLOWED_ATTR = ["class", "id", "href", "title", "colspan", "rowspan"];
 
 interface AwardRow {
   award_id: string;
@@ -49,11 +40,46 @@ export default async function AwardPage({ params }: PageProps) {
   const { slug } = await params;
   const supabase = await createClient();
 
-  const { data: awardData } = await supabase
+  let { data: awardData } = await supabase
     .from("modern_awards")
     .select("award_id, award_name, fwc_url, raw_html, last_changed_at")
     .eq("award_id", slug)
     .single();
+
+  // On-demand fetch: if award not in DB yet, seed it from FWC and cache it
+  if (!awardData) {
+    try {
+      const list = await fetchAwardsList();
+      const meta = list.find((a) => a.awardId === slug);
+      if (!meta) notFound();
+
+      const content = await fetchAwardContent(meta.fwcUrl);
+      const service = createServiceClient();
+      const now = new Date().toISOString();
+      await service.from("modern_awards").upsert(
+        {
+          award_id: meta.awardId,
+          award_name: meta.awardName,
+          fwc_url: meta.fwcUrl,
+          content_hash: content.contentHash,
+          raw_html: content.rawHtml,
+          html_length: content.htmlLength,
+          last_checked_at: now,
+          last_changed_at: now,
+        },
+        { onConflict: "award_id" }
+      );
+      awardData = {
+        award_id: meta.awardId,
+        award_name: meta.awardName,
+        fwc_url: meta.fwcUrl,
+        raw_html: content.rawHtml,
+        last_changed_at: now,
+      };
+    } catch {
+      notFound();
+    }
+  }
 
   const award = awardData as AwardRow | null;
   if (!award) notFound();
@@ -77,11 +103,7 @@ export default async function AwardPage({ params }: PageProps) {
   let sections: Array<{ sectionKey: string; sectionTitle: string; html: string }> = [];
 
   if (award.raw_html) {
-    const sanitised = DOMPurify.sanitize(award.raw_html, {
-      ALLOWED_TAGS,
-      ALLOWED_ATTR,
-      FORCE_BODY: true,
-    });
+    const sanitised = sanitizeAwardHtml(award.raw_html);
     sections = parseAwardSections(sanitised);
   } else {
     sections = [

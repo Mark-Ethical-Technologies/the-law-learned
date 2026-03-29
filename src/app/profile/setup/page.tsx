@@ -32,6 +32,8 @@ export default function ProfileSetup() {
   const supabase = createClient();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [langIdx, setLangIdx] = useState(0);
 
@@ -59,14 +61,38 @@ export default function ProfileSetup() {
 
   const progress = Math.round(((step - 1) / (STEPS.length - 1)) * 100);
 
+  const handleCheckout = async () => {
+    const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_PLUS_WEEKLY;
+    if (!priceId) { router.push("/dashboard"); return; }
+    setCheckoutLoading(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ priceId, mode: "subscription" }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error || "Could not start checkout. Please try again.");
+        setCheckoutLoading(false);
+      }
+    } catch {
+      alert("Could not connect to checkout. Please check your connection.");
+      setCheckoutLoading(false);
+    }
+  };
+
   const handleNext = async () => {
     if (step < 4) {
       setStep(step + 1);
     } else if (step === 4) {
       // Save profile
+      setSaveError(null);
       setLoading(true);
       if (userId) {
-        await supabase.from("profiles").upsert({
+        const { error } = await supabase.from("profiles").upsert({
           id: userId,
           first_name: form.firstName,
           industry: form.industry,
@@ -74,8 +100,12 @@ export default function ProfileSetup() {
           pay_rate: parseFloat(form.payRate) || null,
           pay_type: form.payType,
           onboarding_complete: true,
-          updated_at: new Date().toISOString(),
         });
+        if (error) {
+          setSaveError("Couldn't save your profile. Please try again.");
+          setLoading(false);
+          return;
+        }
       }
       setLoading(false);
       setStep(5);
@@ -267,10 +297,11 @@ export default function ProfileSetup() {
                     <li>✓ Document upload for evidence</li>
                   </ul>
                   <button
-                    onClick={() => router.push("/dashboard")}
-                    className="w-full py-3 bg-[#C9A84C] hover:bg-[#b8963e] text-white font-bold rounded-xl text-sm transition-all"
+                    onClick={handleCheckout}
+                    disabled={checkoutLoading}
+                    className="w-full py-3 bg-[#C9A84C] hover:bg-[#b8963e] disabled:opacity-60 text-white font-bold rounded-xl text-sm transition-all"
                   >
-                    Upgrade to Plus — $4.99/wk →
+                    {checkoutLoading ? "Redirecting to checkout..." : "Upgrade to Plus — $4.99/wk →"}
                   </button>
                 </div>
               </div>
@@ -278,13 +309,18 @@ export default function ProfileSetup() {
           )}
 
           {step < 5 && (
-            <button
-              onClick={handleNext}
-              disabled={!canProgress() || loading}
-              className="w-full mt-6 bg-[#C9A84C] hover:bg-[#b8963e] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-all text-lg"
-            >
-              {loading ? "Saving..." : step === 4 ? "Save my profile →" : "Continue →"}
-            </button>
+            <>
+              {saveError && (
+                <p className="text-red-400 text-sm mt-3 text-center">{saveError}</p>
+              )}
+              <button
+                onClick={handleNext}
+                disabled={!canProgress() || loading}
+                className="w-full mt-4 bg-[#C9A84C] hover:bg-[#b8963e] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-all text-lg"
+              >
+                {loading ? "Saving..." : step === 4 ? "Save my profile →" : "Continue →"}
+              </button>
+            </>
           )}
         </div>
       </div>

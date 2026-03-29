@@ -14,6 +14,7 @@ export default async function Dashboard() {
 
   const firstName = profile?.first_name || user.email?.split("@")[0] || "there";
   const tier = profile?.subscription_tier || "free";
+  const docsUploaded: number = profile?.documents_uploaded ?? 0;
 
   return (
     <div className="min-h-screen bg-[#F0F4F8]">
@@ -79,15 +80,21 @@ export default async function Dashboard() {
         {/* Shift tracker card */}
         <div className="bg-[#1B3A5C] rounded-2xl p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
-            <div className="text-[#C9A84C] font-semibold text-sm mb-1">New</div>
+            <div className="text-[#C9A84C] font-semibold text-sm mb-1">
+              {docsUploaded > 0 ? `${docsUploaded} document${docsUploaded !== 1 ? "s" : ""} uploaded` : "New"}
+            </div>
             <div className="text-white font-bold text-lg">Log my shifts</div>
-            <div className="text-white/50 text-sm mt-1">Track your hours and see if your penalty rates are being paid correctly.</div>
+            <div className="text-white/50 text-sm mt-1">
+              {docsUploaded > 0
+                ? "Upload more payslips or rosters to keep your records up to date."
+                : "Track your hours and see if your penalty rates are being paid correctly."}
+            </div>
           </div>
           <a
             href="/dashboard/shifts"
             className="shrink-0 bg-[#C9A84C] hover:bg-[#d4b860] text-[#1B3A5C] font-bold px-6 py-3 rounded-xl transition-all text-sm"
           >
-            Open shift tracker →
+            {docsUploaded > 0 ? "Upload another →" : "Open shift tracker →"}
           </a>
         </div>
 

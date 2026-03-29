@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import PayChatWidget from "@/app/components/PayChatWidget";
+import type { UploadResult } from "@/lib/documents/types";
 
 // ---------- Types ----------
 
@@ -109,6 +110,14 @@ export default function ShiftsPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showAIChat, setShowAIChat] = useState(false);
   const [aiSeedMessage, setAiSeedMessage] = useState("");
+
+  // --- Upload state ---
+  const [docType, setDocType] = useState<"payslip" | "roster">("payslip");
+  const [uploading, setUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -237,6 +246,55 @@ export default function ShiftsPage() {
     }
   }
 
+  // ---------- Upload handlers ----------
+
+  async function handleUploadFile(file: File) {
+    setUploadError(null);
+    setUploadResult(null);
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("document_type", docType);
+      const res = await fetch("/api/documents/upload", { method: "POST", body: fd });
+      const data: UploadResult = await res.json();
+      if (!res.ok) {
+        setUploadError((data as { error?: string }).error ?? "Upload failed.");
+      } else {
+        setUploadResult(data);
+        // Reload shifts to show newly inserted ones
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) await loadShifts(user.id);
+      }
+    } catch {
+      setUploadError("Could not connect to server. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) handleUploadFile(file);
+    e.target.value = "";
+  }
+
+  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleUploadFile(file);
+  }
+
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setDragActive(true);
+  }
+
+  function handleDragLeave() {
+    setDragActive(false);
+  }
+
   // ---------- AI CTA ----------
 
   function handleAskAI() {
@@ -281,6 +339,114 @@ export default function ShiftsPage() {
           <p className="text-gray-500">
             Log your hours and pay received. The AI will check your penalty rates.
           </p>
+        </div>
+
+        {/* Document upload zone */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-bold text-[#1B3A5C]">Upload a payslip or roster</h2>
+            <div className="flex gap-2">
+              {(["payslip", "roster"] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setDocType(t)}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                    docType === t
+                      ? "bg-[#1B3A5C] text-white"
+                      : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                  }`}
+                >
+                  {t === "payslip" ? "Payslip" : "Roster"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Drop zone */}
+          <div
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onClick={() => fileInputRef.current?.click()}
+            className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
+              dragActive
+                ? "border-[#C9A84C] bg-amber-50"
+                : "border-gray-200 hover:border-[#C9A84C] hover:bg-gray-50"
+            } ${uploading ? "opacity-50 pointer-events-none" : ""}`}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/webp,image/heic,image/heif,application/pdf"
+              capture="environment"
+              className="hidden"
+              onChange={handleFileInput}
+            />
+            {uploading ? (
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" />
+                <p className="text-gray-500 text-sm font-medium">Extracting data from your document…</p>
+              </div>
+            ) : (
+              <>
+                <div className="text-3xl mb-2">📄</div>
+                <p className="text-gray-600 font-medium text-sm">
+                  Drop your {docType} here, or tap to browse
+                </p>
+                <p className="text-gray-400 text-xs mt-1">
+                  JPG, PNG, HEIC, PDF — up to 10 MB
+                </p>
+                <p className="text-gray-400 text-xs mt-1">
+                  📷 On mobile, you can take a photo directly
+                </p>
+              </>
+            )}
+          </div>
+
+          {/* Upload error */}
+          {uploadError && (
+            <div className="mt-3 bg-red-50 border border-red-200 rounded-xl p-3">
+              <p className="text-red-600 text-sm font-medium">⚠️ {uploadError}</p>
+            </div>
+          )}
+
+          {/* Upload result summary */}
+          {uploadResult && (
+            <div className={`mt-3 rounded-xl p-4 border ${uploadResult.extraction_ok ? "bg-green-50 border-green-200" : "bg-amber-50 border-amber-200"}`}>
+              <p className={`font-semibold text-sm mb-2 ${uploadResult.extraction_ok ? "text-green-800" : "text-amber-800"}`}>
+                {uploadResult.extraction_ok ? "✅ Document processed" : "⚠️ Uploaded but extraction incomplete"}
+              </p>
+              {uploadResult.extraction_ok && uploadResult.extracted_data && (
+                <div className="text-sm text-gray-600 space-y-1">
+                  {"employer_name" in uploadResult.extracted_data && uploadResult.extracted_data.employer_name && (
+                    <p>🏢 Employer: <span className="font-medium text-gray-800">{uploadResult.extracted_data.employer_name}</span></p>
+                  )}
+                  {"hourly_rate" in uploadResult.extracted_data && uploadResult.extracted_data.hourly_rate && (
+                    <p>💰 Hourly rate: <span className="font-medium text-gray-800">${uploadResult.extracted_data.hourly_rate}/hr</span></p>
+                  )}
+                  {"hours_worked" in uploadResult.extracted_data && uploadResult.extracted_data.hours_worked && (
+                    <p>⏱ Hours worked: <span className="font-medium text-gray-800">{uploadResult.extracted_data.hours_worked}h</span></p>
+                  )}
+                  {"shifts" in uploadResult.extracted_data && (
+                    <p>📋 Shifts extracted: <span className="font-medium text-gray-800">{(uploadResult.extracted_data.shifts ?? []).length}</span></p>
+                  )}
+                  {"award_identified" in uploadResult.extracted_data && uploadResult.extracted_data.award_identified && (
+                    <p>📜 Award: <span className="font-medium text-gray-800">{uploadResult.extracted_data.award_identified}</span></p>
+                  )}
+                </div>
+              )}
+              {uploadResult.profile_updated && (
+                <p className="text-xs text-green-700 mt-2 font-medium">
+                  ✓ Your profile was updated with employer details from this document
+                </p>
+              )}
+              {uploadResult.shifts_inserted != null && uploadResult.shifts_inserted > 0 && (
+                <p className="text-xs text-green-700 mt-1 font-medium">
+                  ✓ {uploadResult.shifts_inserted} shift{uploadResult.shifts_inserted !== 1 ? "s" : ""} added to your history below
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Gap detection banner */}

@@ -59,9 +59,9 @@ const LANGUAGES = [
 
 const STATS = [
   { value: 47000, suffix: "+", label: "Australian workers potentially underpaid right now", prefix: "" },
-  { value: 23000, suffix: "", label: "Average underpayment recovered per wage claim", prefix: "$" },
+  { value: 155, suffix: "", label: "Modern awards analysed — every industry, every penalty rate", prefix: "" },
   { value: 6, suffix: " years", label: "Maximum back-pay period under the Fair Work Act", prefix: "" },
-  { value: 120, suffix: "+", label: "Modern awards covering Australian workers — we know every one", prefix: "" },
+  { value: 120, suffix: "+", label: "Modern Award clauses where underpayments hide most often", prefix: "" },
 ];
 
 function AnimatedCounter({ target, prefix = "", suffix = "", duration = 2000 }: { target: number; prefix?: string; suffix?: string; duration?: number }) {
@@ -70,12 +70,14 @@ function AnimatedCounter({ target, prefix = "", suffix = "", duration = 2000 }: 
   const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
+    // Fallback: always start after 2.5s even if IntersectionObserver never fires
+    const fallback = setTimeout(() => setStarted(true), 2500);
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting && !started) setStarted(true); },
-      { threshold: 0.5 }
+      { threshold: 0.1 }
     );
     if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
+    return () => { observer.disconnect(); clearTimeout(fallback); };
   }, [started]);
 
   useEffect(() => {
